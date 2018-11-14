@@ -125,13 +125,14 @@ namespace Orleans.Storage.EntityFrameworkCore
             return emtity;
         }
 
-        public async Task<TEntity> AutoInsertAsync(TEntity entity)
+        public Task<TEntity> AutoInsertAsync(TEntity entity)
         {
             using (var db = this.GetDbContext())
             {
                 var e = db.Add(entity);
-                await db.SaveChangesAsync();
-                return e.Entity;
+                db.SaveChanges();
+                this.SaveSnapshot(e.Entity);
+                return Task.FromResult(e.Entity);
             }
         }
         public async Task<TEntity> AutoUpdateAsync(TEntity entity)
