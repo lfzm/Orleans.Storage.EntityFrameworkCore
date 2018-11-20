@@ -87,8 +87,11 @@ namespace Orleans.Storage.EntityFrameworkCore.ChangeDetector
             object obj = difference.Object1 != null ? difference.Object1 : difference.Object2;
             if (typeof(IStorageEntity).IsAssignableFrom(obj.GetType()))
                 return EntityType.Basis;
+            else if (obj.GetType().IsSimpleType())
+                return EntityType.Basis;
             else
                 return EntityType.Entity;
+
         }
 
     }

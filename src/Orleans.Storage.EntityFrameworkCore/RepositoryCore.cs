@@ -92,6 +92,8 @@ namespace Orleans.Storage.EntityFrameworkCore
                     {
                         e = await this.GetRepository().UpdateAsync(entity);
                     }
+                    this.SaveSnapshot(e);
+                    return e;
                 }
                 catch (Exception ex)
                 {
@@ -105,8 +107,6 @@ namespace Orleans.Storage.EntityFrameworkCore
                     await this.ReadAsync(id);
                     throw new RepositoryException($"Modify  {typeof(TEntity).Name} database failed");
                 }
-                this.SaveSnapshot(e);
-                return e;
             }
             else
             {

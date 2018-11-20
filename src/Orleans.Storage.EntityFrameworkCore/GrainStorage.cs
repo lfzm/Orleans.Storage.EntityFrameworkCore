@@ -31,24 +31,17 @@ namespace Orleans.Storage.EntityFrameworkCore
         }
         public async Task WriteStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
         {
-            try
-            {
-                if (grainState == null)
-                    throw new RepositoryException("修改的状态对象不能为空");
+            if (grainState == null)
+                throw new RepositoryException("修改的状态对象不能为空");
 
-                if (grainState.ETag.Equals("0"))
-                    grainState.State = await this.GetRepository(grainState).AddAsync(grainState.State);
-                else
-                {
-                    object id = this.GetPrimaryKeyObject(grainReference);
-                    grainState.State = await this.GetRepository(grainState).ModifyAsync(id, grainState.State);
-                }
-                this.SetETag(grainState);
-            }
-            catch (Exception ex)
+            if (grainState.ETag.Equals("0"))
+                grainState.State = await this.GetRepository(grainState).AddAsync(grainState.State);
+            else
             {
-                throw new RepositoryException(ex.Message);
+                object id = this.GetPrimaryKeyObject(grainReference);
+                grainState.State = await this.GetRepository(grainState).ModifyAsync(id, grainState.State);
             }
+            this.SetETag(grainState);
         }
 
         private void SetETag(IGrainState grainState)
@@ -92,5 +85,5 @@ namespace Orleans.Storage.EntityFrameworkCore
         }
     }
 
-  
+
 }

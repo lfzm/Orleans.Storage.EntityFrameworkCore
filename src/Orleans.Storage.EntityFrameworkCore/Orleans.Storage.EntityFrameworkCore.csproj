@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/aqa510415008/Ocelot.Security.AuthorizationToken.EntityFramework</PackageProjectUrl>
     <PackageTags>Orleans EntityFrameworkCore</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0-bate2</Version>
+    <Version>1.0.0-bate3</Version>
   </PropertyGroup>
 
   <ItemGroup>
