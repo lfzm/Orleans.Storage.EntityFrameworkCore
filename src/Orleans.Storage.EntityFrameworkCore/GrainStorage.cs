@@ -38,8 +38,16 @@ namespace Orleans.Storage.EntityFrameworkCore
                 grainState.State = await this.GetRepository(grainState).AddAsync(grainState.State);
             else
             {
-                object id = this.GetPrimaryKeyObject(grainReference);
-                grainState.State = await this.GetRepository(grainState).ModifyAsync(id, grainState.State);
+                try
+                {
+                    object id = this.GetPrimaryKeyObject(grainReference);
+                    grainState.State = await this.GetRepository(grainState).ModifyAsync(id, grainState.State);
+                }
+                catch (Exception ex)
+                {
+                    grainState.State = this.ReadStateAsync(grainType, grainReference, grainState);
+                    throw ex;
+                }
             }
             this.SetETag(grainState);
         }

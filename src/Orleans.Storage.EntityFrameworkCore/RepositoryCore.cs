@@ -104,7 +104,6 @@ namespace Orleans.Storage.EntityFrameworkCore
                         name = typeof(TEntity).Name
                     };
                     this._logger.LogError(ex, this.JsonSerialize(message));
-                    await this.ReadAsync(id);
                     throw new RepositoryException($"Modify  {typeof(TEntity).Name} database failed");
                 }
             }
