@@ -1,15 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Orleans.Runtime;
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using Orleans.Storage.EntityFrameworkCore.ChangeDetector;
-using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace Orleans.Storage.EntityFrameworkCore
 {
@@ -18,6 +15,7 @@ namespace Orleans.Storage.EntityFrameworkCore
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IEntityChangeDetector _changeDetector;
+        private readonly IDbContextFactory _dbContextFactory;
         private readonly ILogger _logger;
         private readonly bool IsAutoUpdate = true;
         private readonly bool IsAutoDelete = true;
@@ -28,6 +26,7 @@ namespace Orleans.Storage.EntityFrameworkCore
             this._serviceProvider = serviceProvider;
             this._logger = serviceProvider.GetRequiredService<ILogger<RepositoryCore<TEntity, TPrimaryKey>>>();
             this._changeDetector = _serviceProvider.GetService<IEntityChangeDetector>();
+            this._dbContextFactory = _serviceProvider.GetRequiredService<IDbContextFactory>();
 
         }
         public RepositoryCore(IServiceProvider serviceProvider, bool isAutoUpdate, bool isAutoDelete, bool isAutoInsert) : this(serviceProvider)
@@ -155,7 +154,7 @@ namespace Orleans.Storage.EntityFrameworkCore
         }
         private DbContext GetDbContext()
         {
-            return this._serviceProvider.GetRequiredService<DbContext>();
+            return this._dbContextFactory.CreateDbContext();
         }
         private IRepository<TEntity, TPrimaryKey> GetRepository()
         {
