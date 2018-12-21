@@ -118,9 +118,13 @@ namespace Orleans.Storage.EntityFrameworkCore
             {
                 return null;
             }
-            var emtity = await this.GetRepository().GetAsync((TPrimaryKey)id);
-            this.SaveSnapshot(emtity);
-            return emtity;
+            using (var rep = this.GetRepository())
+            {
+                var emtity = await rep.GetAsync((TPrimaryKey)id);
+                this.SaveSnapshot(emtity);
+                return emtity;
+            }
+        
         }
 
         public Task<TEntity> AutoInsertAsync(TEntity entity)

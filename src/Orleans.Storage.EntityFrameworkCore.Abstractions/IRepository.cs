@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
+using System;
 
 namespace Orleans.Storage.EntityFrameworkCore
 {
-    public interface IRepository
+    public interface IRepository:IDisposable
     {
 
     }
