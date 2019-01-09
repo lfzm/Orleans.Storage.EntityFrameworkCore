@@ -45,7 +45,7 @@ namespace Orleans.Storage.EntityFrameworkCore
                 }
                 catch (Exception ex)
                 {
-                    grainState.State = this.ReadStateAsync(grainType, grainReference, grainState);
+                    await this.ReadStateAsync(grainType, grainReference, grainState);
                     throw ex;
                 }
             }

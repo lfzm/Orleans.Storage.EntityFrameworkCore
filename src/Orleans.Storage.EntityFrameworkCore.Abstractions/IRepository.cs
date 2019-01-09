@@ -3,7 +3,7 @@ using System;
 
 namespace Orleans.Storage.EntityFrameworkCore
 {
-    public interface IRepository:IDisposable
+    public interface IRepository
     {
 
     }

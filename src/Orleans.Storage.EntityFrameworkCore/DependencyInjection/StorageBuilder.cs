@@ -7,19 +7,22 @@ namespace Orleans.Storage.EntityFrameworkCore
 {
     public class StorageBuilder : IStorageBuilder
     {
+        public IServiceCollection Service { get; }
+
         public StorageBuilder(IServiceCollection service)
         {
             this.Service = service;
         }
-        public IServiceCollection Service { get; }
 
-        public IStorageBuilder AddDbContextFactory<TFactory>() where TFactory : IDbContextFactory
+        public IStorageBuilder AddDbContextFactory<TDbContext, TDbContextFactory>() 
+            where TDbContext : DbContext
+            where TDbContextFactory: class,IDbContextFactory, IDbContextFactory<TDbContext>
         {
-            Service.AddSingleton(typeof(IDbContextFactory),typeof(TFactory));
-            Service.AddSingleton(typeof(IDbContextFactory<>), typeof(TFactory));
+            this.Service.AddSingleton<IDbContextFactory, TDbContextFactory>();
+            this.Service.AddSingleton(typeof(IDbContextFactory<TDbContext>), typeof(TDbContextFactory));
             return this;
         }
-
+ 
         public IStorageBuilder AddRepository<TRepository, TEntity, TPrimaryKey>(bool isAutoUpdate = true, bool isAutoDelete = true, bool isAutoInsert = true)
           where TEntity : class, IStorageEntity
           where TRepository : class, IRepository
@@ -32,8 +35,6 @@ namespace Orleans.Storage.EntityFrameworkCore
             });
             return this;
         }
-
-   
 
         public IStorageBuilder Configure(Action<OrleansStorageOptions> config)
         {

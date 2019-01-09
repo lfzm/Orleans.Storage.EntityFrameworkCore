@@ -10,11 +10,12 @@ namespace Orleans.Storage.EntityFrameworkCore
 
         IStorageBuilder Configure(Action<OrleansStorageOptions> config);
 
-        IStorageBuilder AddDbContextFactory<TFactory>() 
-            where TFactory : IDbContextFactory;
+        IStorageBuilder AddDbContextFactory<TDbContext, TDbContextFactory>()
+                 where TDbContext : DbContext
+                 where TDbContextFactory : class, IDbContextFactory, IDbContextFactory<TDbContext>;
 
         IStorageBuilder AddRepository<TRepository, TEntity, TPrimaryKey>(bool isAutoUpdate = true, bool isAutoDelete = true, bool isAutoInsert = true)
-          where TRepository : class, IRepository
-          where TEntity : class, IStorageEntity;
+        where TRepository : class, IRepository
+        where TEntity : class, IStorageEntity;
     }
 }

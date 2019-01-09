@@ -4,12 +4,11 @@ namespace Orleans.Storage.EntityFrameworkCore
 {
     public interface IDbContextFactory
     {
-        DbContext CreateDbContext();
+        DbContext CreateDbContext<TEntity>();
     }
 
-    public interface IDbContextFactory<TDbContext>:IDbContextFactory
-        where TDbContext:DbContext
+    public interface IDbContextFactory<TDbContext>: IDbContextFactory
     {
-        new TDbContext  CreateDbContext();
+        TDbContext CreateDbContext();
     }
 }

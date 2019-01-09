@@ -118,47 +118,49 @@ namespace Orleans.Storage.EntityFrameworkCore
             {
                 return null;
             }
-            using (var rep = this.GetRepository())
-            {
-                var emtity = await rep.GetAsync((TPrimaryKey)id);
-                this.SaveSnapshot(emtity);
-                return emtity;
-            }
-        
+
+            var emtity = await this.GetRepository().GetAsync((TPrimaryKey)id);
+            this.SaveSnapshot(emtity);
+            return emtity;
         }
 
         public Task<TEntity> AutoInsertAsync(TEntity entity)
         {
-            using (var db = this.GetDbContext())
+            return this.DoAsync((db) =>
             {
                 var e = db.Add(entity);
                 db.SaveChanges();
                 this.SaveSnapshot(e.Entity);
-                return Task.FromResult(e.Entity);
-            }
+                return e.Entity;
+            });
         }
-        public async Task<TEntity> AutoUpdateAsync(TEntity entity)
+        public Task<TEntity> AutoUpdateAsync(TEntity entity)
         {
             IEntityChangeManager changeManager = this.GetChangeManagerAsync(entity);
-            using (var db = this.GetDbContext())
+            return this.DoAsync((db) =>
             {
                 db.Update(changeManager, entity);
-                await db.SaveChangesAsync();
+                db.SaveChanges();
                 return entity;
-            }
+            });
         }
         public Task AutoDeleoteAsync(TEntity entity)
         {
-            using (var db = this.GetDbContext())
+            return this.DoAsync((db) =>
             {
                 db.Delete(entity);
                 int count = db.SaveChanges();
-                return Task.FromResult(count);
-            }
+                return count;
+            });
         }
-        private DbContext GetDbContext()
+
+        public Task<T> DoAsync<T>(Func<DbContext, T> func)
         {
-            return this._dbContextFactory.CreateDbContext();
+            using (var db = _dbContextFactory.CreateDbContext<TEntity>())
+            {
+                var ret = func.Invoke(db);
+                return Task.FromResult(ret);
+            }
         }
         private IRepository<TEntity, TPrimaryKey> GetRepository()
         {
